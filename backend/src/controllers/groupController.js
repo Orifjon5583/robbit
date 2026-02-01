@@ -64,13 +64,15 @@ class GroupController {
     }
   }
 
-  async assignTeacher(request, reply) {
+  async updateGroup(request, reply) {
+    console.log('updateGroup handler called with Params:', request.params, 'Body:', request.body);
     try {
       if (request.user.role !== 'super_admin') {
-        return reply.status(403).send({ error: 'Only Super Admin can assign teachers' });
+        return reply.status(403).send({ error: 'Only Super Admin can update groups' });
       }
-      const { groupId, teacherId } = request.body;
-      const result = await Group.updateTeacher(groupId, teacherId);
+      const { id } = request.params;
+      const { name, teacherId } = request.body;
+      const result = await Group.update(id, { name, teacherId });
       reply.send(result);
     } catch (err) {
       reply.status(400).send({ error: err.message });
@@ -91,6 +93,32 @@ class GroupController {
 
       const students = await Group.getStudents(id);
       reply.send(students);
+    } catch (err) {
+      reply.status(500).send({ error: err.message });
+    }
+  }
+
+  async deleteGroup(request, reply) {
+    try {
+      if (request.user.role !== 'super_admin') {
+        return reply.status(403).send({ error: 'Only Super Admin can delete groups' });
+      }
+      const { id } = request.params;
+      await Group.delete(id);
+      reply.send({ message: 'Group deleted successfully' });
+    } catch (err) {
+      reply.status(500).send({ error: err.message });
+    }
+  }
+
+  async removeStudent(request, reply) {
+    try {
+      if (request.user.role !== 'super_admin') {
+        return reply.status(403).send({ error: 'Only Super Admin can remove students' });
+      }
+      const { groupId, studentId } = request.body;
+      await Group.removeStudent(groupId, studentId);
+      reply.send({ message: 'Student removed from group' });
     } catch (err) {
       reply.status(500).send({ error: err.message });
     }

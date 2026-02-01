@@ -2,7 +2,7 @@ const axios = require('axios');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
-const API_URL = `http://localhost:${process.env.PORT || 3000}/api`;
+const API_URL = `http://localhost:${process.env.PORT || 5000}/api`;
 
 const runVerification = async () => {
     try {

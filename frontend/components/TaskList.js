@@ -6,25 +6,30 @@ export default function TaskList({ onAssign }) {
 
   useEffect(() => {
     const fetchTasks = async () => {
-      const res = await api.get('/tasks');
-      setTasks(res.data);
+      try {
+        const res = await api.get('/api/tasks');
+        setTasks(res.data);
+      } catch (err) {
+        console.error(err);
+      }
     };
     fetchTasks();
   }, []);
 
   return (
     <div className="task-list">
-      <h3>Tasks</h3>
+      <h3>Vazifalar</h3>
       <ul>
         {tasks.map(t => (
           <li key={t.id}>
             <b>{t.title}</b> ({t.type})
             {onAssign && (
               <button
+                className="btn-primary"
                 onClick={() => onAssign(t.id)}
-                style={{ marginLeft: '10px', fontSize: '0.8rem' }}
+                style={{ marginLeft: 'auto', fontSize: '0.8rem', padding: '0.5rem 1rem' }}
               >
-                Assign
+                Biriktirish
               </button>
             )}
           </li>

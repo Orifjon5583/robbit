@@ -22,22 +22,13 @@ export default function Dashboard() {
     window.location.href = '/login';
   };
 
-  if (!user) return <div>Loading...</div>;
+  if (!user) return <div>Yuklanmoqda...</div>;
 
   return (
-    <div className="dashboard">
-      <header>
-        <h1>EduPlatform</h1>
-        <div className="user-info">
-          <span>{user.username} ({user.role})</span>
-          <button onClick={handleLogout}>Logout</button>
-        </div>
-      </header>
-      <main>
-        {user.role === 'super_admin' && <AdminDashboard />}
-        {user.role === 'teacher' && <TeacherDashboard />}
-        {user.role === 'student' && <StudentDashboard />}
-      </main>
-    </div>
+    <>
+      {user.role === 'super_admin' && <AdminDashboard />}
+      {user.role === 'teacher' && <TeacherDashboard />}
+      {user.role === 'student' && <StudentDashboard />}
+    </>
   );
 }

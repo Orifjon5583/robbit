@@ -45,7 +45,7 @@ npm install
 npm run dev
 ```
 
-Server will run on `http://localhost:3000`.
+Server will run on `http://localhost:5000`.
 
 ### 3. Frontend Setup
 

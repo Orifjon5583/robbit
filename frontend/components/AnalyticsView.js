@@ -13,7 +13,7 @@ export default function AnalyticsView() {
             // Let's list groups and their average scores? 
             // Simplification: Just show raw JSON stats for now or a simple summary.
             try {
-                const res = await api.get('/analytics/teacher');
+                const res = await api.get('/api/analytics/teacher');
                 setStats(res.data);
             } catch (err) {
                 console.error(err);
@@ -22,13 +22,13 @@ export default function AnalyticsView() {
         fetchStats();
     }, []);
 
-    if (!stats) return <div>Loading Analytics...</div>;
+    if (!stats) return <div>Statistika yuklanmoqda...</div>;
 
     return (
         <div className="analytics-view">
-            <h3>Class Performance</h3>
+            <h3>Sinf Ko‘rsatkichlari</h3>
             <div className="stat-box">
-                <h4>Total Tasks Created</h4>
+                <h4>Yaratilgan Vazifalar</h4>
                 <p>{stats.totalTasks}</p>
             </div>
             {/* Extended stats could go here */}

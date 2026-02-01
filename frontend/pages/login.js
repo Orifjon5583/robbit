@@ -12,10 +12,10 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-     // ...
-// Bu yerda to'liq yo'l (/api bilan) berilishi kerak
-const response = await api.post('/api/auth/login', { username, password });
-// ...
+      // ...
+      // Bu yerda to'liq yo'l (/api bilan) berilishi kerak
+      const response = await api.post('/api/auth/login', { username, password });
+      // ...
       const { token, user } = response.data;
 
       setAuthToken(token);
@@ -29,10 +29,10 @@ const response = await api.post('/api/auth/login', { username, password });
 
   return (
     <div className="login-container">
-      <h1>EduPlatform Login</h1>
+      <h1>EduPlatform Tizimiga Kirish</h1>
       <form onSubmit={handleLogin}>
         <div>
-          <label>Username</label>
+          <label>Foydalanuvchi nomi</label>
           <input
             type="text"
             value={username}
@@ -41,7 +41,7 @@ const response = await api.post('/api/auth/login', { username, password });
           />
         </div>
         <div>
-          <label>Password</label>
+          <label>Parol</label>
           <input
             type="password"
             value={password}
@@ -50,7 +50,7 @@ const response = await api.post('/api/auth/login', { username, password });
           />
         </div>
         {error && <p className="error">{error}</p>}
-        <button type="submit">Login</button>
+        <button type="submit">Kirish</button>
       </form>
     </div>
   );

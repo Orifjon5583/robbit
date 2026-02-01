@@ -4,6 +4,9 @@ import TaskList from './TaskList';
 import CreateTaskForm from './CreateTaskForm';
 import AssignmentForm from './AssignmentForm';
 import AnalyticsView from './AnalyticsView';
+import Sidebar from './Sidebar';
+import { getUser } from '../utils/auth';
+import { LayoutDashboard, BookOpen, PlusCircle, BarChart2 } from 'lucide-react';
 
 export default function TeacherDashboard() {
     const [view, setView] = useState('overview'); // 'tasks', 'create-task', 'assign', 'analytics'
@@ -13,7 +16,7 @@ export default function TeacherDashboard() {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const res = await api.get('/analytics/teacher');
+                const res = await api.get('/api/analytics/teacher');
                 setStats(res.data);
             } catch (err) {
                 console.error(err);
@@ -28,44 +31,58 @@ export default function TeacherDashboard() {
     };
 
     return (
-        <div className="teacher-dashboard">
-            <nav style={{ marginBottom: '20px', padding: '10px', background: '#f0f0f0' }}>
-                <button onClick={() => setView('overview')} style={{ marginRight: '10px' }}>Overview</button>
-                <button onClick={() => setView('tasks')} style={{ marginRight: '10px' }}>My Tasks</button>
-                <button onClick={() => setView('create-task')} style={{ marginRight: '10px' }}>Create Task</button>
-                <button onClick={() => setView('analytics')}>Analytics</button>
-                {/* 'assign' view is hidden from nav, accessed via Task List */}
-            </nav>
+        <div className="dashboard-container">
+            <Sidebar
+                role="teacher"
+                activeView={view}
+                onViewChange={setView}
+                user={getUser()}
+            />
 
-            <div className="dashboard-content">
+            <main className="main-content">
                 {view === 'overview' && stats && (
-                    <div className="stats">
-                        <h3>Teacher Overview</h3>
-                        <p>Total Students: {stats.totalStudents || 0}</p>
-                        <p>Tasks Created: {stats.totalTasks || 0}</p>
+                    <div className="stats-cards">
+                        <div className="card">
+                            <h3>O‘qituvchi Statistikasi</h3>
+                            <p className="highlight-text">{stats.totalStudents || 0}</p>
+                            <span className="sub-text">O‘quvchilar</span>
+                        </div>
+                        <div className="card">
+                            <h3>Vazifalar</h3>
+                            <p className="highlight-text">{stats.totalTasks || 0}</p>
+                            <span className="sub-text">Yaratilgan</span>
+                        </div>
                     </div>
                 )}
 
                 {view === 'tasks' && (
-                    <div className="tasks-view">
-                        <h3>Task Library</h3>
+                    <div className="card">
+                        <h3>Vazifalar Kutubxonasi</h3>
                         <TaskList onAssign={handleAssignClick} />
                     </div>
                 )}
 
                 {view === 'create-task' && (
-                    <CreateTaskForm onTaskCreated={() => setView('tasks')} />
+                    <div className="card">
+                        <CreateTaskForm onTaskCreated={() => setView('tasks')} />
+                    </div>
                 )}
 
-                {view === 'assign' && selectedTaskId && (
-                    <AssignmentForm
-                        taskId={selectedTaskId}
-                        onAssignmentCreated={() => setView('tasks')}
-                    />
+                {view === 'assign' && (
+                    <div className="card">
+                        <button onClick={() => setView('tasks')} className="btn-secondary" style={{ marginBottom: '1rem' }}>
+                            &larr; Orqaga
+                        </button>
+                        <AssignmentForm taskId={selectedTaskId} onAssignmentCreated={() => setView('tasks')} />
+                    </div>
                 )}
 
-                {view === 'analytics' && <AnalyticsView />}
-            </div>
+                {view === 'analytics' && (
+                    <div className="card">
+                        <AnalyticsView />
+                    </div>
+                )}
+            </main>
         </div>
     );
 }

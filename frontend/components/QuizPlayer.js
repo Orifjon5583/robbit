@@ -59,7 +59,7 @@ export default function QuizPlayer({ content, onComplete }) {
                     </div>
                 </div>
             ))}
-            <button className="submit-btn" onClick={handleSubmit}>Submit Quiz</button>
+            <button className="submit-btn" onClick={handleSubmit}>Testni Yakunlash</button>
         </div>
     );
 }

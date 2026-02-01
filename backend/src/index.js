@@ -1,3 +1,4 @@
+// Entry point for Fastify server (Debug Mode 3)
 const fastify = require('fastify')({ logger: true });
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
@@ -39,6 +40,7 @@ const start = async () => {
     const host = '0.0.0.0'; // Barcha tarmoqlar uchun ochiq
     await fastify.listen({ port, host });
     console.log(`Server ishga tushdi: http://localhost:${port}`);
+    console.log(fastify.printRoutes()); // LOG ALL ROUTES
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

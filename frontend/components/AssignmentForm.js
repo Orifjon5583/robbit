@@ -23,7 +23,7 @@ export default function AssignmentForm({ taskId, onAssignmentCreated }) {
 
   const fetchGroups = async () => {
     try {
-      const response = await api.get('/groups');
+      const response = await api.get('/api/groups');
       setGroups(response.data);
     } catch (err) {
       setError('Failed to fetch groups');
@@ -32,7 +32,7 @@ export default function AssignmentForm({ taskId, onAssignmentCreated }) {
 
   const fetchStudentsInGroup = async (groupId) => {
     try {
-      const response = await api.get(`/groups/${groupId}/students`);
+      const response = await api.get(`/api/groups/${groupId}/students`);
       setStudents(response.data);
     } catch (err) {
       setError('Failed to fetch students');
@@ -56,7 +56,7 @@ export default function AssignmentForm({ taskId, onAssignmentCreated }) {
 
     try {
       for (const studentId of selectedStudents) {
-        await api.post('/assignments', { taskId, studentId });
+        await api.post('/api/assignments', { taskId, studentId });
       }
       setSuccess(true);
       setSelectedStudents([]);
@@ -69,16 +69,16 @@ export default function AssignmentForm({ taskId, onAssignmentCreated }) {
 
   return (
     <div className="assignment-form">
-      <h3>Assign Task to Students</h3>
+      <h3>O‘quvchilarga Vazifa Biriktirish</h3>
       {error && <div className="error">{error}</div>}
-      {success && <div className="success">Assignment created successfully!</div>}
+      {success && <div className="success">Vazifa muvaffaqiyatli biriktirildi!</div>}
       <form onSubmit={handleSubmit}>
         <select
           value={selectedGroup}
           onChange={(e) => setSelectedGroup(e.target.value)}
           required
         >
-          <option value="">Select a Group</option>
+          <option value="">Guruhni Tanlang</option>
           {groups.map((group) => (
             <option key={group.id} value={group.id}>
               {group.name}
@@ -88,7 +88,7 @@ export default function AssignmentForm({ taskId, onAssignmentCreated }) {
 
         {students.length > 0 && (
           <div className="students-list">
-            <h4>Select Students:</h4>
+            <h4>O‘quvchilarni Tanlang:</h4>
             {students.map((student) => (
               <label key={student.id}>
                 <input
@@ -103,7 +103,7 @@ export default function AssignmentForm({ taskId, onAssignmentCreated }) {
         )}
 
         <button type="submit" className="btn-primary">
-          Assign to Selected Students
+          Tanlanganlarga Biriktirish
         </button>
       </form>
     </div>

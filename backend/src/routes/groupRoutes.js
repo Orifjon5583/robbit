@@ -1,3 +1,4 @@
+console.log('LOADING GROUP ROUTES.JS...'); // DEBUG LOG
 const groupController = require('../controllers/groupController');
 const { authMiddleware } = require('../middlewares/auth');
 
@@ -19,9 +20,17 @@ module.exports = async (fastify) => {
   // Guruhga o'quvchi qo'shish (faqat super_admin uchun)
   fastify.post('/api/groups/add-student', { preHandler: authMiddleware }, groupController.addStudent);
 
-  // Guruhga o'qituvchi tayinlash (faqat super_admin uchun)
-  fastify.post('/api/groups/assign-teacher', { preHandler: authMiddleware }, groupController.assignTeacher);
+  console.log('Registering PUT /api/groups/:id');
+  // Guruhni tahrirlash (nomi yoki o'qituvchisi)
+  fastify.put('/api/groups/:id', { preHandler: authMiddleware }, groupController.updateGroup);
+  fastify.post('/api/groups/:id/edit', { preHandler: authMiddleware }, groupController.updateGroup); // Fallback alias
 
   // Guruhdagi o'quvchilar ro'yxatini olish
   fastify.get('/api/groups/:id/students', { preHandler: authMiddleware }, groupController.getGroupStudents);
+
+  // Guruhni o'chirish
+  fastify.delete('/api/groups/:id', { preHandler: authMiddleware }, groupController.deleteGroup);
+
+  // O'quvchini guruhdan chiqarish
+  fastify.post('/api/groups/remove-student', { preHandler: authMiddleware }, groupController.removeStudent);
 };

@@ -16,7 +16,7 @@ class UserController {
         return reply.status(403).send({ error: 'Faqat Super Admin foydalanuvchi yarata oladi' });
       }
 
-      const { username, password, role, fullName } = request.body;
+      const { username, password, role, fullName, age } = request.body;
       if (!['teacher', 'student', 'super_admin'].includes(role)) {
         return reply.status(400).send({ error: 'Noto‘g‘ri rol tanlandi' });
       }
@@ -27,7 +27,7 @@ class UserController {
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
-      const user = await User.create(username, hashedPassword, role, fullName);
+      const user = await User.create(username, hashedPassword, role, fullName, age);
       reply.status(201).send(user);
     } catch (err) {
       console.error(err);
@@ -85,6 +85,24 @@ class UserController {
   }
 
   /**
+   * ID bo'yicha foydalanuvchini olish.
+   */
+  async getUserById(request, reply) {
+    try {
+      if (request.user.role !== 'super_admin') {
+        return reply.status(403).send({ error: 'Ruxsat yo‘q' });
+      }
+      const { id } = request.params;
+      const user = await User.findById(id);
+      if (!user) return reply.status(404).send({ error: 'Foydalanuvchi topilmadi' });
+      reply.send(user);
+    } catch (err) {
+      console.error(err);
+      reply.status(500).send({ error: 'Foydalanuvchini olishda xatolik' });
+    }
+  }
+
+  /**
    * Parolni tiklash.
    * Admin - hamma uchun.
    * O'qituvchi - faqat o'z guruhidagi o'quvchilar uchun.
@@ -93,9 +111,9 @@ class UserController {
     try {
       const { studentId, newPassword } = request.body;
       const loggedInUser = request.user;
-      
+
       let hasPermission = false;
-      
+
       if (loggedInUser.role === 'super_admin') {
         hasPermission = true;
       } else if (loggedInUser.role === 'teacher') {
@@ -117,6 +135,27 @@ class UserController {
     } catch (err) {
       console.error(err);
       reply.status(500).send({ error: 'Parolni tiklashda xatolik' });
+    }
+  }
+
+  async updateUser(request, reply) {
+    try {
+      if (request.user.role !== 'super_admin') {
+        return reply.status(403).send({ error: 'Faqat Super Admin tahrirlay oladi' });
+      }
+      const { id } = request.params;
+      const { username, role, fullName, age, password } = request.body;
+
+      let hashedPassword = undefined;
+      if (password) {
+        hashedPassword = await bcrypt.hash(password, 10);
+      }
+
+      const updatedUser = await User.update(id, { username, role, fullName, age, password: hashedPassword });
+      reply.send(updatedUser);
+    } catch (err) {
+      console.error(err);
+      reply.status(500).send({ error: 'Foydalanuvchini yangilashda xatolik' });
     }
   }
 }

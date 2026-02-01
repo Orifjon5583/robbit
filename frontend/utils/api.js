@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getAuthToken } from './auth';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000', // <-- TO'G'RILANDI
+  baseURL: 'http://localhost:5000', // <-- TO'G'RILANDI
   headers: {
     'Content-Type': 'application/json',
   },

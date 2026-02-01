@@ -31,6 +31,7 @@ class TaskController {
       reply.status(400).send({ error: err.message });
     }
   }
+}
 
   async getTasks(request, reply) {
     try {
