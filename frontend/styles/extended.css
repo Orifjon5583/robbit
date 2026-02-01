@@ -1,0 +1,142 @@
+/* Extended Styles for Educational Platform */
+
+.btn-primary,
+.btn-secondary {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.success {
+  color: #155724;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.create-task-form,
+.assignment-form {
+  background-color: white;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.create-task-form form,
+.assignment-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.create-task-form input,
+.create-task-form select,
+.assignment-form input,
+.assignment-form select {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.questions {
+  margin: 15px 0;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+.question-form {
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: white;
+  border-left: 3px solid #007bff;
+}
+
+.students-list {
+  margin: 15px 0;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+.students-list label {
+  display: block;
+  margin: 8px 0;
+  cursor: pointer;
+}
+
+.students-list input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.analytics {
+  background-color: white;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.analytics-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.analytics-table tr {
+  border-bottom: 1px solid #ddd;
+}
+
+.analytics-table td {
+  padding: 12px;
+  text-align: left;
+}
+
+.analytics-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.dashboard main {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .dashboard header {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .create-task-form,
+  .assignment-form,
+  .group-list,
+  .task-list {
+    margin: 15px 0;
+  }
+}

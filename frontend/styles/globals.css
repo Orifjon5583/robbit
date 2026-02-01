@@ -1,0 +1,129 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+}
+
+.login-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h1 {
+  text-align: center;
+  color: #333;
+}
+
+.login-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-container input {
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.login-container button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.login-container button:hover {
+  background-color: #0056b3;
+}
+
+.error {
+  color: red;
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #ffe0e0;
+  border-radius: 4px;
+}
+
+.dashboard {
+  padding: 20px;
+}
+
+.dashboard header {
+  background-color: #007bff;
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-info button {
+  padding: 8px 16px;
+  background-color: white;
+  color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.group-list,
+.task-list {
+  background-color: white;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.group-list h2,
+.task-list h2 {
+  color: #333;
+}
+
+.group-list ul,
+.task-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.group-list li,
+.task-list li {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.group-list li:last-child,
+.task-list li:last-child {
+  border-bottom: none;
+}
+
+.group-list h3,
+.task-list h3 {
+  margin: 0 0 5px 0;
+  color: #007bff;
+}
+
+.group-list p,
+.task-list p {
+  margin: 0;
+  color: #666;
+}
