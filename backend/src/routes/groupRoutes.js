@@ -1,28 +1,27 @@
 const groupController = require('../controllers/groupController');
 const { authMiddleware } = require('../middlewares/auth');
 
+/**
+ * Barcha guruhlar bilan bog'liq route'lar shu yerda jamlanadi.
+ * Har bir route'ga "authMiddleware" qo'shilgan, ya'ni faqat tizimga kirgan
+ * foydalanuvchilar (tokeni borlar) bu yo'llarga kira oladi.
+ */
 module.exports = async (fastify) => {
-  fastify.post('/api/groups', { preHandler: authMiddleware }, (request, reply) =>
-    groupController.createGroup(request, reply)
-  );
+  // Yangi guruh yaratish (faqat super_admin uchun)
+  fastify.post('/api/groups', { preHandler: authMiddleware }, groupController.createGroup);
 
-  fastify.get('/api/groups', { preHandler: authMiddleware }, (request, reply) =>
-    groupController.getGroups(request, reply)
-  );
+  // Barcha guruhlar ro'yxatini olish
+  fastify.get('/api/groups', { preHandler: authMiddleware }, groupController.getGroups);
 
-  fastify.get('/api/groups/:id', { preHandler: authMiddleware }, (request, reply) =>
-    groupController.getGroupById(request, reply)
-  );
+  // ID bo'yicha bitta guruhni olish
+  fastify.get('/api/groups/:id', { preHandler: authMiddleware }, groupController.getGroupById);
 
-  fastify.post('/api/groups/add-student', { preHandler: authMiddleware }, (request, reply) =>
-    groupController.addStudent(request, reply)
-  );
+  // Guruhga o'quvchi qo'shish (faqat super_admin uchun)
+  fastify.post('/api/groups/add-student', { preHandler: authMiddleware }, groupController.addStudent);
 
-  fastify.get('/api/groups/:id/students', { preHandler: authMiddleware }, (request, reply) =>
-    groupController.getGroupStudents(request, reply)
-  );
+  // Guruhga o'qituvchi tayinlash (faqat super_admin uchun)
+  fastify.post('/api/groups/assign-teacher', { preHandler: authMiddleware }, groupController.assignTeacher);
 
-  fastify.post('/api/groups/assign-teacher', { preHandler: authMiddleware }, (request, reply) =>
-    groupController.assignTeacher(request, reply)
-  );
+  // Guruhdagi o'quvchilar ro'yxatini olish
+  fastify.get('/api/groups/:id/students', { preHandler: authMiddleware }, groupController.getGroupStudents);
 };

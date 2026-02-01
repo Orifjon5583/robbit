@@ -12,7 +12,10 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/auth/login', { username, password });
+     // ...
+// Bu yerda to'liq yo'l (/api bilan) berilishi kerak
+const response = await api.post('/api/auth/login', { username, password });
+// ...
       const { token, user } = response.data;
 
       setAuthToken(token);

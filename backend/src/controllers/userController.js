@@ -4,113 +4,119 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 class UserController {
+  /**
+   * Yangi foydalanuvchi yaratish.
+   * Loyiha talabiga ko'ra, faqat tizimga kirgan "super_admin" yangi
+   * foydalanuvchi (o'qituvchi yoki o'quvchi) yarata oladi.
+   * Birinchi "super_admin"ni yaratish uchun "npm run seed" ishlatiladi.
+   */
   async register(request, reply) {
-    // Only Super Admin can create users (teachers, students)
-    // Or maybe we allow a public registration? Requirement says "Only Super Admin can create teachers/students".
-    // So we check permission.
     try {
-      // Assuming authorization middleware sets request.user
-      // Check if user is super_admin. 
-      // Note: If no users exist, we might need a way to seed the first admin. 
-      // But for this endpoint, if it's protected, we strictly enforce it.
-      if (request.user.role !== 'super_admin') {
-        return reply.status(403).send({ error: 'Only Super Admin can create users' });
+      if (!request.user || request.user.role !== 'super_admin') {
+        return reply.status(403).send({ error: 'Faqat Super Admin foydalanuvchi yarata oladi' });
       }
 
       const { username, password, role, fullName } = request.body;
       if (!['teacher', 'student', 'super_admin'].includes(role)) {
-        return reply.status(400).send({ error: 'Invalid role' });
+        return reply.status(400).send({ error: 'Noto‘g‘ri rol tanlandi' });
+      }
+
+      const existingUser = await User.findByUsername(username);
+      if (existingUser) {
+        return reply.status(409).send({ error: 'Bu nomdagi foydalanuvchi mavjud' });
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = await User.create(username, hashedPassword, role, fullName);
       reply.status(201).send(user);
     } catch (err) {
-      reply.status(400).send({ error: err.message });
+      console.error(err);
+      reply.status(500).send({ error: 'Foydalanuvchi yaratishda xatolik' });
     }
   }
 
+  /**
+   * Tizimga kirish (Login).
+   * Foydalanuvchi nom va parolni tekshirib, to'g'ri bo'lsa JWT token qaytaradi.
+   */
   async login(request, reply) {
     try {
       const { username, password } = request.body;
       const user = await User.findByUsername(username);
       if (!user) {
-        return reply.status(401).send({ error: 'Invalid credentials' });
+        return reply.status(401).send({ error: 'Login yoki parol xato' });
       }
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return reply.status(401).send({ error: 'Invalid credentials' });
+        return reply.status(401).send({ error: 'Login yoki parol xato' });
       }
 
       const token = jwt.sign(
         { id: user.id, username: user.username, role: user.role },
-        process.env.JWT_SECRET || 'secret_key',
-        { expiresIn: '1d' }
+        process.env.JWT_SECRET || 'my_default_secret_key',
+        { expiresIn: '24h' }
       );
 
-      reply.send({ token, user: { id: user.id, username: user.username, role: user.role, fullName: user.full_name } });
+      // Parolni javobdan olib tashlaymiz
+      const { password: _, ...userData } = user;
+      reply.send({ token, user: userData });
     } catch (err) {
-      reply.status(500).send({ error: err.message });
+      console.error(err);
+      reply.status(500).send({ error: 'Tizimga kirishda xatolik' });
     }
   }
 
+  /**
+   * Foydalanuvchilar ro'yxatini olish (faqat super_admin uchun).
+   */
   async getAllUsers(request, reply) {
     try {
-      // Super Admin sees everything. Teachers might need to see students? 
-      // Requirement: "Super Admin can see everything."
-      // Let's assume this is for Admin to list users.
       if (request.user.role !== 'super_admin') {
-        return reply.status(403).send({ error: 'Access denied' });
+        return reply.status(403).send({ error: 'Ruxsat yo‘q' });
       }
-      const { role } = request.query;
-      if (role) {
-        const users = await User.listByRole(role);
-        return reply.send(users);
-      }
-      // If no role specified, maybe return all? Or error? Standardizing on role filter.
-      // For now let's just support role filter.
-      return reply.status(400).send({ error: 'Role query parameter required' });
+      const { role } = request.query; // ?role=student kabi filterlash uchun
+      const users = await User.listByRole(role);
+      reply.send(users);
     } catch (err) {
-      reply.status(500).send({ error: err.message });
+      console.error(err);
+      reply.status(500).send({ error: 'Foydalanuvchilarni olishda xatolik' });
     }
   }
 
+  /**
+   * Parolni tiklash.
+   * Admin - hamma uchun.
+   * O'qituvchi - faqat o'z guruhidagi o'quvchilar uchun.
+   */
   async resetPassword(request, reply) {
     try {
       const { studentId, newPassword } = request.body;
-
-      let allowed = false;
-      if (request.user.role === 'super_admin') {
-        allowed = true;
-      } else if (request.user.role === 'teacher') {
-        // Check if student is in teacher's group
-        const isStudent = await Group.checkStudentBelongsToTeacher(studentId, request.user.id);
-        if (isStudent) {
-          allowed = true;
+      const loggedInUser = request.user;
+      
+      let hasPermission = false;
+      
+      if (loggedInUser.role === 'super_admin') {
+        hasPermission = true;
+      } else if (loggedInUser.role === 'teacher') {
+        const isStudentInGroup = await Group.checkStudentBelongsToTeacher(studentId, loggedInUser.id);
+        if (isStudentInGroup) {
+          hasPermission = true;
         }
       }
 
-      if (!allowed) {
-        return reply.status(403).send({ error: 'Access denied: You cannot reset this user password' });
+      if (!hasPermission) {
+        return reply.status(403).send({ error: 'Bu foydalanuvchining parolini o‘zgartirishga ruxsat yo‘q' });
       }
 
       const hashedPassword = await bcrypt.hash(newPassword, 10);
-      // We don't have a direct updatePassword method in User yet, assume we can extend User or use raw query.
-      // Let's rely on User model having an update feature or just add it now inline if needed?
-      // Better to add method to User model or use a generic update.
-      // For now, I'll direct query or assume User.updatePassword exists (it doesn't).
-      // I'll add the query here for speed or update User.js in next turn. 
-      // Wait, I can't update User.js in parallel. I'll just use the pool import if I could... 
-      // But I can't import pool here properly if I want to keep separation. 
-      // I'll assume User has it or fail? No, I must ensure code works.
-      // I'll use a raw query via pool imported from utils/database
-      const pool = require('../utils/database');
+      const pool = require('../utils/database'); // To'g'ridan-to'g'ri query uchun
       await pool.query('UPDATE users SET password = $1 WHERE id = $2', [hashedPassword, studentId]);
 
-      reply.send({ message: 'Password updated successfully' });
+      reply.send({ message: 'Parol muvaffaqiyatli yangilandi' });
     } catch (err) {
-      reply.status(500).send({ error: err.message });
+      console.error(err);
+      reply.status(500).send({ error: 'Parolni tiklashda xatolik' });
     }
   }
 }
