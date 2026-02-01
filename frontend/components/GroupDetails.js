@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
-import StudentModal from './StudentModal'; // Restored
+import UserModal from './UserModal';
 import GroupModal from './GroupModal';
 import { Users, Trash2, Edit, Plus } from 'lucide-react';
 
@@ -128,11 +128,12 @@ export default function GroupDetails({ groupId, onBack }) {
                 </div>
             </div>
 
-            <StudentModal
+            <UserModal
                 isOpen={isStudentModalOpen}
                 onClose={() => setIsStudentModalOpen(false)}
                 onSave={handleStudentSave}
-                student={editingStudent}
+                user={editingStudent}
+                defaultRole="student"
             />
 
             <GroupModal

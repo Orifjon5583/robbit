@@ -1,30 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
 
-export default function StudentModal({ isOpen, onClose, onSave, student = null }) {
+export default function UserModal({ isOpen, onClose, onSave, user = null, defaultRole = 'student' }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [fullName, setFullName] = useState('');
     const [age, setAge] = useState('');
-    const [role, setRole] = useState('student'); // Default to student
+    const [role, setRole] = useState(defaultRole);
     const [error, setError] = useState('');
 
     useEffect(() => {
-        if (student) {
-            setUsername(student.username);
-            setFullName(student.full_name || '');
-            setAge(student.age || '');
-            setRole(student.role || 'student');
-            setPassword(''); // Don't show password, only set if changing
+        if (user) {
+            setUsername(user.username);
+            setFullName(user.full_name || '');
+            setAge(user.age || '');
+            setRole(user.role || defaultRole);
+            setPassword('');
         } else {
             setUsername('');
             setPassword('');
             setFullName('');
             setAge('');
-            setRole('student');
+            setRole(defaultRole);
         }
         setError('');
-    }, [student, isOpen]);
+    }, [user, isOpen, defaultRole]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -33,13 +33,13 @@ export default function StudentModal({ isOpen, onClose, onSave, student = null }
             if (password) payload.password = password;
 
             let res;
-            if (student) {
+            if (user) {
                 // Edit
-                res = await api.put(`/api/users/${student.id}`, payload);
+                res = await api.put(`/api/users/${user.id}`, payload);
             } else {
                 // Create
                 if (!password) {
-                    setError('Password is required for new users');
+                    setError('Yangi foydalanuvchi uchun parol majburiy');
                     return;
                 }
                 res = await api.post('/api/auth/register', { ...payload, password });
@@ -47,7 +47,7 @@ export default function StudentModal({ isOpen, onClose, onSave, student = null }
             onSave(res.data);
             onClose();
         } catch (err) {
-            setError(err.response?.data?.error || 'Failed to save student');
+            setError(err.response?.data?.error || 'Saqlashda xatolik');
         }
     };
 
@@ -59,10 +59,22 @@ export default function StudentModal({ isOpen, onClose, onSave, student = null }
             background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000
         }}>
             <div className="modal-content card" style={{ width: '400px', margin: 0 }}>
-                <h3>{student ? 'O‘quvchini Tahrirlash' : 'Yangi O‘quvchi'}</h3>
+                <h3>{user ? 'Foydalanuvchini Tahrirlash' : 'Yangi Foydalanuvchi'}</h3>
                 {error && <div className="error">{error}</div>}
 
                 <form onSubmit={handleSubmit}>
+                    <label style={{ display: 'block', marginBottom: '10px' }}>
+                        Rol
+                        <select
+                            value={role}
+                            onChange={e => setRole(e.target.value)}
+                            style={{ marginTop: '5px' }}
+                        >
+                            <option value="student">O‘quvchi</option>
+                            <option value="teacher">O‘qituvchi</option>
+                        </select>
+                    </label>
+
                     <input
                         type="text"
                         placeholder="Login (Username)"
@@ -85,10 +97,10 @@ export default function StudentModal({ isOpen, onClose, onSave, student = null }
                     />
                     <input
                         type="password"
-                        placeholder={student ? "Yangi Parol (ixtiyoriy)" : "Parol"}
+                        placeholder={user ? "Yangi Parol (ixtiyoriy)" : "Parol"}
                         value={password}
                         onChange={e => setPassword(e.target.value)}
-                        required={!student}
+                        required={!user}
                     />
 
                     <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>

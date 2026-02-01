@@ -50,6 +50,17 @@ class User {
     const { rows } = await pool.query(query, [role]);
     return rows;
   }
+  static async findAll() {
+    const query = 'SELECT id, username, full_name, role, created_at FROM users ORDER BY id DESC';
+    const { rows } = await pool.query(query);
+    return rows;
+  }
+
+  static async delete(id) {
+    const query = 'DELETE FROM users WHERE id = $1 RETURNING id';
+    const { rows } = await pool.query(query, [id]);
+    return rows[0];
+  }
 }
 
 module.exports = User;

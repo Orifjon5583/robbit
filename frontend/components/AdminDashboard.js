@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
 import GroupList from './GroupList';
+import UserList from './UserList';
 import GroupDetails from './GroupDetails';
 import Sidebar from './Sidebar';
 import { getUser } from '../utils/auth';
@@ -59,6 +60,12 @@ export default function AdminDashboard() {
                             {/* Potential place for "Create Group" button if needed */}
                         </div>
                         <GroupList onViewDetails={handlegroupClick} />
+                    </div>
+                )}
+
+                {view === 'users' && (
+                    <div className="card">
+                        <UserList />
                     </div>
                 )}
 

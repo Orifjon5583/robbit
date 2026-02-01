@@ -12,7 +12,13 @@ class UserController {
    */
   async register(request, reply) {
     try {
-      if (!request.user || request.user.role !== 'super_admin') {
+      console.log('Register attempt. User:', request.user);
+      if (!request.user) {
+        console.log('FAIL: No user in request');
+        return reply.status(403).send({ error: 'Auth failed' });
+      }
+      if (request.user.role !== 'super_admin') {
+        console.log(`FAIL: Role mismatch. Required: super_admin, Got: ${request.user.role}`);
         return reply.status(403).send({ error: 'Faqat Super Admin foydalanuvchi yarata oladi' });
       }
 
@@ -75,12 +81,32 @@ class UserController {
       if (request.user.role !== 'super_admin') {
         return reply.status(403).send({ error: 'Ruxsat yo‘q' });
       }
-      const { role } = request.query; // ?role=student kabi filterlash uchun
-      const users = await User.listByRole(role);
+      const { role } = request.query;
+      let users;
+      if (role && role !== 'all') {
+        users = await User.listByRole(role);
+      } else {
+        users = await User.findAll();
+      }
       reply.send(users);
     } catch (err) {
       console.error(err);
       reply.status(500).send({ error: 'Foydalanuvchilarni olishda xatolik' });
+    }
+  }
+
+  async deleteUser(request, reply) {
+    try {
+      if (request.user.role !== 'super_admin') {
+        return reply.status(403).send({ error: 'Ruxsat yo‘q' });
+      }
+      const { id } = request.params;
+      const deleted = await User.delete(id);
+      if (!deleted) return reply.status(404).send({ error: 'Foydalanuvchi topilmadi' });
+      reply.send({ message: 'Foydalanuvchi o‘chirildi' });
+    } catch (err) {
+      console.error(err);
+      reply.status(500).send({ error: 'Foydalanuvchini o‘chirishda xatolik' });
     }
   }
 

@@ -1,8 +1,8 @@
-const userController = require('../controllers/userController');
 const { authMiddleware } = require('../middlewares/auth');
 
 module.exports = async (fastify) => {
-  fastify.post('/api/auth/register', (request, reply) => userController.register(request, reply));
+  // Ro'yxatdan o'tish (Faqat Admin yarata oladi, shuning uchun auth kerak)
+  fastify.post('/api/auth/register', { preHandler: authMiddleware }, (request, reply) => userController.register(request, reply));
 
   fastify.post('/api/auth/login', (request, reply) => userController.login(request, reply));
 
@@ -20,5 +20,8 @@ module.exports = async (fastify) => {
 
   fastify.put('/api/users/:id', { preHandler: authMiddleware }, (request, reply) =>
     userController.updateUser(request, reply)
+  );
+  fastify.delete('/api/users/:id', { preHandler: authMiddleware }, (request, reply) =>
+    userController.deleteUser(request, reply)
   );
 };

@@ -22,7 +22,7 @@ export default function Sidebar({ role, activeView, onViewChange, user }) {
     const adminItems = [
         { id: 'overview', label: 'Umumiy', icon: LayoutDashboard },
         { id: 'groups', label: 'Guruhlar', icon: FolderKanban },
-        // { id: 'users', label: 'Foydalanuvchilar', icon: Users },
+        { id: 'users', label: 'Foydalanuvchilar', icon: Users },
     ];
 
     const items = role === 'admin' || role === 'super_admin' ? adminItems : teacherItems;
